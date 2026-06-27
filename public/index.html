@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>토스증권 트레이딩 대시보드</title>
+<link rel="stylesheet" href="/css/style.css">
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+<header class="hdr">
+  <div class="logo">📈</div>
+  <div><h1>토스증권 트레이딩</h1><p>Open API v1.1.5</p></div>
+  <div class="dot" id="dot"></div>
+  <div class="hdr-right">
+    <span class="token-info" id="tokenInfo"></span>
+    <button class="btn-icon" id="logoutBtn" style="display:none">로그아웃</button>
+    <button class="btn-icon" id="apiSetBtn">🔑 API 설정</button>
+  </div>
+</header>
+<nav class="nav">
+  <button class="ntab active" data-tab="trading">💬 트레이딩</button>
+  <button class="ntab" data-tab="market">📊 시세</button>
+  <button class="ntab" data-tab="stock">🏢 종목정보</button>
+  <button class="ntab" data-tab="marketinfo">🕐 장운영</button>
+  <button class="ntab" data-tab="asset">💼 자산/보유</button>
+  <button class="ntab" data-tab="orders">📋 주문내역</button>
+  <button class="ntab" data-tab="orderinfo">ℹ️ 주문정보</button>
+</nav>
+<main class="body">
+<div class="panel" id="panelBody">
+<section id="tab-trading">
+  <div class="chat-wrap">
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="chat-input-area">
+      <div class="inp-wrap">
+        <input class="chat-inp" id="chatInp" placeholder="삼성전자 1주 매수 · 얼마야? · 잔액" autocomplete="off">
+        <button class="send-btn" id="sendBtn">↑</button>
+      </div>
+      <p class="hint">종목명·심볼 입력 · 매수/매도 · 현재가 · 잔액 · 장운영 여부</p>
+    </div>
+  </div>
+</section>
+<section id="tab-market" style="display:none">
+  <div class="card">
+    <div class="card-title">차트 조회</div>
+    <div class="row mb8">
+      <div class="field"><label>종목명</label><input id="m-name" placeholder="삼성전자, 애플..." autocomplete="off"><div class="autocomplete" id="m-ac" style="display:none"></div></div>
+      <div class="field"><label>봉 단위</label><select id="m-interval"><option value="1d">일봉</option><option value="1m">분봉</option></select></div>
+      <div class="field"><label>개수</label><input id="m-count" type="number" value="100" min="1" max="200"></div>
+      <button class="btn pri" id="loadChartBtn">차트 로드</button>
+    </div>
+    <div class="chart-tabs">
+      <button class="ctab active" data-mode="candle">캔들</button>
+      <button class="ctab" data-mode="line">라인</button>
+    </div>
+    <div class="chart-box"><div id="mainChart"></div></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">상/하한가</div>
+      <div class="row"><div class="field"><label>종목명</label><input id="pl-name" placeholder="삼성전자" autocomplete="off"><div class="autocomplete" id="pl-ac" style="display:none"></div></div><button class="btn sec" id="loadPriceLimitBtn">조회</button></div>
+      <div id="pl-result" class="result-box"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">현재가 다건 조회</div>
+      <div class="row"><div class="field"><label>종목명 (콤마 구분)</label><input id="mp-names" placeholder="삼성전자, 애플"></div><button class="btn sec" id="loadPricesBtn">조회</button></div>
+      <div id="mp-result" class="result-box"></div>
+    </div>
+  </div>
+</section>
+<section id="tab-stock" style="display:none">
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">종목 기본정보</div>
+      <div class="row"><div class="field"><label>종목명 (콤마 구분)</label><input id="si-names" placeholder="삼성전자, 애플"></div><button class="btn pri" id="loadStockInfoBtn">조회</button></div>
+      <div id="si-result" style="margin-top:10px"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">매수 유의사항</div>
+      <div class="row"><div class="field"><label>종목명</label><input id="sw-name" placeholder="삼성전자" autocomplete="off"><div class="autocomplete" id="sw-ac" style="display:none"></div></div><button class="btn pri" id="loadWarningsBtn">조회</button></div>
+      <div id="sw-result" style="margin-top:10px"></div>
+    </div>
+  </div>
+</section>
+<section id="tab-marketinfo" style="display:none">
+  <div class="grid3">
+    <div class="card">
+      <div class="card-title">환율 (KRW↔USD)</div>
+      <div class="row mb8"><div class="field"><label>기준통화</label><select id="er-base"><option value="USD">USD</option><option value="KRW">KRW</option></select></div><div class="field"><label>표시통화</label><select id="er-quote"><option value="KRW">KRW</option><option value="USD">USD</option></select></div></div>
+      <button class="btn pri w100 mb8" id="loadExRateBtn">조회</button>
+      <div id="er-result" class="result-box"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">국내장 운영</div>
+      <div class="field mb8"><label>기준일</label><input id="kr-date" placeholder="오늘"></div>
+      <button class="btn pri w100 mb8" id="loadKrCalBtn">조회</button>
+      <div id="kr-result"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">미국장 운영</div>
+      <div class="field mb8"><label>기준일</label><input id="us-date" placeholder="오늘"></div>
+      <button class="btn pri w100 mb8" id="loadUsCalBtn">조회</button>
+      <div id="us-result"></div>
+    </div>
+  </div>
+</section>
+<section id="tab-asset" style="display:none">
+  <div class="card">
+    <div class="card-title flex-sb">보유 주식<button class="btn sec sm" id="refreshHoldingsBtn">새로고침</button></div>
+    <div class="row mb10"><div class="field"><label>종목 필터</label><input id="h-sym" placeholder="비워두면 전체"></div><button class="btn sec" id="filterHoldingsBtn">적용</button></div>
+    <div id="h-summary" class="grid4 mb12"></div>
+    <div id="h-items"></div>
+  </div>
+</section>
+<section id="tab-orders" style="display:none">
+  <div class="card mb10">
+    <div class="card-title">주문 내역</div>
+    <div class="row">
+      <div class="field"><label>상태</label><select id="ord-status"><option value="OPEN">진행중</option><option value="CLOSED">완료</option></select></div>
+      <div class="field"><label>심볼</label><input id="ord-sym" placeholder="005930"></div>
+      <div class="field"><label>시작일</label><input id="ord-from" placeholder="2026-01-01"></div>
+      <div class="field"><label>종료일</label><input id="ord-to" placeholder="2026-12-31"></div>
+      <button class="btn pri" id="loadOrdersBtn">조회</button>
+    </div>
+  </div>
+  <div id="ord-result"></div>
+  <div class="card mt10">
+    <div class="card-title">주문 상세</div>
+    <div class="row"><div class="field"><label>주문 ID</label><input id="od-id" placeholder="orderId"></div><button class="btn sec" id="loadOrderDetailBtn">조회</button></div>
+    <div id="od-result" class="result-box"></div>
+  </div>
+</section>
+<section id="tab-orderinfo" style="display:none">
+  <div class="grid3">
+    <div class="card">
+      <div class="card-title">매수 가능 금액</div>
+      <div class="field mb8"><label>통화</label><select id="bp-cur"><option value="KRW">KRW</option><option value="USD">USD</option></select></div>
+      <button class="btn pri w100 mb8" id="loadBuyingPowerBtn">조회</button>
+      <div id="bp-result" class="result-box"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">매도 가능 수량</div>
+      <div class="field mb8"><label>심볼</label><input id="sq-sym" placeholder="005930"></div>
+      <button class="btn pri w100 mb8" id="loadSellableBtn">조회</button>
+      <div id="sq-result" class="result-box"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">매매 수수료율</div>
+      <button class="btn pri w100 mb8" id="loadCommissionsBtn">조회</button>
+      <div id="comm-result" class="result-box"></div>
+    </div>
+  </div>
+</section>
+</div>
+</main>
+<div class="overlay" id="apiModal" style="display:none">
+  <div class="modal">
+    <button class="mclose" id="closeApiModal">×</button>
+    <h3>🔑 토스증권 API 연결</h3>
+    <p class="modal-desc">토스증권 Open API 키를 입력하세요.</p>
+    <div class="warn-box">⚠️ 실제 계좌와 연동되어 실매매가 실행됩니다.</div>
+    <div class="mfield"><label>API Key</label><input type="text" id="m-cid" placeholder="tsck_live_IX..."></div>
+    <div class="mfield"><label>Secret Key</label><input type="password" id="m-csec" placeholder="tssk_live_..."></div>
+    <button class="btn pri w100 lg" id="connectBtn">연결하기</button>
+    <div id="conn-result" class="result-box mt8"></div>
+  </div>
+</div>
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>

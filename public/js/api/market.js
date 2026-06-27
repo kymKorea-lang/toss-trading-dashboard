@@ -1,0 +1,11 @@
+import { apiGet } from './auth.js';
+export const getPrices       = syms          => apiGet(`/api/v1/prices?symbols=${syms}`);
+export const getOrderbook    = sym           => apiGet(`/api/v1/orderbook?symbol=${sym}`);
+export const getTrades       = (sym,count=10)=> apiGet(`/api/v1/trades?symbol=${sym}&count=${count}`);
+export const getPriceLimit   = sym           => apiGet(`/api/v1/price-limits?symbol=${sym}`);
+export const getCandles      = (sym,iv,cnt)  => apiGet(`/api/v1/candles?symbol=${sym}&interval=${iv}&count=${cnt}`);
+export const getStocks       = syms          => apiGet(`/api/v1/stocks?symbols=${syms}`);
+export const getWarnings     = sym           => apiGet(`/api/v1/stocks/${sym}/warnings`);
+export const getExchangeRate = (base,quote)  => apiGet(`/api/v1/exchange-rate?baseCurrency=${base}&quoteCurrency=${quote}`);
+export const getKrCalendar   = (date='')     => apiGet(`/api/v1/market-calendar/KR${date?'?date='+date:''}`);
+export const getUsCalendar   = (date='')     => apiGet(`/api/v1/market-calendar/US${date?'?date='+date:''}`);
