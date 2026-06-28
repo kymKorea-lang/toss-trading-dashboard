@@ -131,3 +131,6 @@ export function namesToSyms(namesStr) {
     return s ? s.sym : n.trim();
   }).filter(Boolean);
 }
+
+export { ALL_STOCKS as LOCAL_STOCKS };
+
