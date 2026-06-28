@@ -205,7 +205,7 @@ export async function handleChat(text) {
         state.pendingOrder = { type: 'buy', sym: stock.sym, name: realName, qty, price, currency: p.currency };
         botMsg(`📈 장 운영 현황<br>${market}`);
         showConfirmCard(
-          state.pendingOrder,
+          { ...state.pendingOrder, isMarket: true },
           async () => { await executeOrder(state.pendingOrder); state.pendingOrder = null; },
           () => { botMsg('주문을 취소했습니다.'); state.pendingOrder = null; }
         );
@@ -224,7 +224,7 @@ export async function handleChat(text) {
         state.pendingOrder = { type: 'sell', sym: stock.sym, name: realName, qty, price, currency: p.currency };
         botMsg(`📈 장 운영 현황<br>${market}`);
         showConfirmCard(
-          state.pendingOrder,
+          { ...state.pendingOrder, isMarket: true },
           async () => { await executeOrder(state.pendingOrder); state.pendingOrder = null; },
           () => { botMsg('주문을 취소했습니다.'); state.pendingOrder = null; }
         );
