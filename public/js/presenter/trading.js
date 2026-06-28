@@ -169,7 +169,7 @@ export async function handleChat(text) {
     const stock = await findStockAsync(intent.stock);
     if (!stock) {
       hideTyping();
-      botMsg(`"${intent.stock}" 종목을 찾지 못했습니다.<br><small style="color:var(--t2)">심볼 직접 입력 가능 (예: 018260, AAPL)</small>`);
+      botMsg(`"${intent.stock}" 종목을 찾지 못했습니다.<br><br>💡 <b>두 가지 방법으로 시도해보세요:</b><br>① 심볼 직접 입력: <b>${intent.stock.toUpperCase()} 1주 ${intent.type === 'buy' ? '매수' : '매도'}</b><br>② 종목코드 입력: <b>005930 1주 매수</b> (6자리 숫자)<br><br>찾으시는 종목 심볼을 모르신다면 <a href="https://finance.naver.com" target="_blank" style="color:var(--acc)">네이버 금융</a>에서 확인해보세요.`);
       return;
     }
 
