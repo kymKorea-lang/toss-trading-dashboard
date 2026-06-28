@@ -1,4 +1,4 @@
-import { findStock, namesToSyms, LOCAL_STOCKS } from '../model/stocks.js';
+import { findStock, namesToSyms, LOCAL_STOCKS, searchStocks } from '../model/stocks.js';
 import { getPrices, getPriceLimit, getCandles, getStocks, getWarnings, getExchangeRate, getKrCalendar, getUsCalendar } from '../api/market.js';
 import { setCandles, setMode, render } from '../view/chart.js';
 import { setHTML, getVal, loading, empty, fmt, session } from '../view/components.js';
@@ -15,7 +15,6 @@ export async function loadChart() {
   const stock=findStock(name); if(!stock){alert('종목을 찾을 수 없습니다');return;}
   try {
     const d=await getCandles(stock.sym,interval,count);
-    console.log('캔들 응답:', JSON.stringify(d));  // ← 이 줄 추가
     setCandles(d.result?.candles||[]);
     render('mainChart');
   }
