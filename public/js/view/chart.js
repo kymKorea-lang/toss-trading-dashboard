@@ -29,8 +29,12 @@ export function render(elId = 'mainChart') {
     height,
     layout: { background: { color: 'transparent' }, textColor: '#8b8fa8' },
     grid:   { vertLines: { color: '#2a2d3a' }, horzLines: { color: '#2a2d3a' } },
-    rightPriceScale: { borderColor: '#2a2d3a' },
-    timeScale:       { borderColor: '#2a2d3a', timeVisible: true },
+    rightPriceScale: {
+      borderColor: '#2a2d3a',
+      // 소수점 불필요한 .00 제거
+      priceFormat: { type: 'custom', formatter: p => Number(p).toLocaleString('ko-KR') },
+    },
+    timeScale: { borderColor: '#2a2d3a', timeVisible: true },
   });
 
   // 중복 날짜 제거 + 정렬
@@ -98,20 +102,20 @@ export function render(elId = 'mainChart') {
 
   // ── 최고/최저 수평선 ───────────────────────────
   series.createPriceLine({
-    price:       highPrice,
-    color:       '#ff4f6a',
-    lineWidth:   1,
-    lineStyle:   LightweightCharts.LineStyle.Dashed,
+    price:            highPrice,
+    color:            '#ff4f6a',
+    lineWidth:        1,
+    lineStyle:        LightweightCharts.LineStyle.Dashed,
     axisLabelVisible: true,
-    title:       `최고 ${currSym}${fmt(highPrice)}`,
+    title:            `최고 ${fromHigh}%`,
   });
   series.createPriceLine({
-    price:       lowPrice,
-    color:       '#26c97a',
-    lineWidth:   1,
-    lineStyle:   LightweightCharts.LineStyle.Dashed,
+    price:            lowPrice,
+    color:            '#26c97a',
+    lineWidth:        1,
+    lineStyle:        LightweightCharts.LineStyle.Dashed,
     axisLabelVisible: true,
-    title:       `최저 ${currSym}${fmt(lowPrice)}`,
+    title:            `최저 +${fromLow}%`,
   });
 
   // ── 크로스헤어 툴팁 ───────────────────────────
