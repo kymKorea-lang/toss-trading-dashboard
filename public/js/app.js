@@ -6,6 +6,7 @@ import { loadHoldings, loadBuyingPower, loadSellable, loadCommissions } from './
 import { loadOrders, loadOrderDetail } from './presenter/orders.js';
 import { botMsg } from './view/chat.js';
 import { setHTML } from './view/components.js';
+import { loadStocks } from './model/stocks.js';
 
 // ── 탭 전환 ──────────────────────────────────────
 function initTabs() {
