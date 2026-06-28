@@ -1,65 +1,84 @@
-// 차트 렌더링 (View)
+// 채팅 UI 렌더링 (View)
+import { fmt, fmtM } from './components.js';
 
-let _instance = null;
-let _candles = [];
-let _mode = 'candle';
+const WRAP_ID = 'chatMsgs';
 
-export function setCandles(candles) {
-  _candles = candles;
+function append(html) {
+  const wrap = document.getElementById(WRAP_ID);
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  wrap.appendChild(div.firstElementChild);
+  wrap.scrollTop = wrap.scrollHeight;
 }
 
-export function setMode(mode) {
-  _mode = mode;
+export function botMsg(html) {
+  append(`
+    <div class="msg bot">
+      <div class="av">🤖</div>
+      <div><div class="bbl">${html}</div></div>
+    </div>`);
 }
 
-export function render(elementId = 'mainChart') {
-  const el = document.getElementById(elementId);
-  if (!el) return;
-  el.innerHTML = '';
+export function userMsg(html) {
+  append(`
+    <div class="msg user">
+      <div class="av">👤</div>
+      <div><div class="bbl">${html}</div></div>
+    </div>`);
+}
 
-  if (!_candles.length) {
-    el.innerHTML = '<div class="empty">데이터 없음</div>';
-    return;
-  }
+export function showTyping() {
+  const wrap = document.getElementById(WRAP_ID);
+  const div = document.createElement('div');
+  div.className = 'msg bot t-msg';
+  div.innerHTML = `
+    <div class="av">🤖</div>
+    <div><div class="bbl">
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+    </div></div>`;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+}
 
-  _instance = LightweightCharts.createChart(el, {
-    width: el.offsetWidth,
-    height: el.offsetHeight,
-    layout: { background: { color: 'transparent' }, textColor: '#8b8fa8' },
-    grid: { vertLines: { color: '#2a2d3a' }, horzLines: { color: '#2a2d3a' } },
-    rightPriceScale: { borderColor: '#2a2d3a' },
-    timeScale: { borderColor: '#2a2d3a', timeVisible: true },
+export function hideTyping() {
+  document.querySelectorAll('.t-msg').forEach(el => el.remove());
+}
+
+export function showConfirmCard(order, onConfirm, onCancel) {
+  const isBuy = order.type === 'buy';
+  const c = order.currency === 'USD' ? '$' : '₩';
+  const total = order.price * order.qty;
+
+  const wrap = document.getElementById(WRAP_ID);
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.innerHTML = `
+    <div class="av">🤖</div>
+    <div>
+      <div class="bbl">${isBuy ? '📗 매수' : '📕 매도'} 주문을 확인해주세요.</div>
+      <div class="conf-card">
+        <div class="conf-row"><span class="lbl">종목</span><span><b>${order.name}</b> (${order.sym})</span></div>
+        <div class="conf-row"><span class="lbl">수량</span><span>${order.qty}주</span></div>
+        <div class="conf-row"><span class="lbl">현재가</span><span>${c}${fmt(order.price)}</span></div>
+        <div class="conf-row"><span class="lbl">예상금액</span>
+          <span style="color:${isBuy ? 'var(--r)' : 'var(--g)'}">${c}${fmtM(total)}</span>
+        </div>
+        <div class="conf-btns">
+          <button class="cbtn yes" id="confirmBtn">✅ ${isBuy ? '매수' : '매도'} 확정</button>
+          <button class="cbtn no" id="cancelBtn">취소</button>
+        </div>
+      </div>
+    </div>`;
+
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+
+  div.querySelector('#confirmBtn').addEventListener('click', () => {
+    div.querySelectorAll('.cbtn').forEach(b => b.disabled = true);
+    onConfirm();
   });
-
-  const sorted = [..._candles].sort((a, b) => a.timestamp > b.timestamp ? 1 : -1);
-  const toTime = ts => ts.slice(0, 10);
-
-  if (_mode === 'candle') {
-    const series = _instance.addCandlestickSeries({
-      upColor: '#26c97a', downColor: '#ff4f6a',
-      borderUpColor: '#26c97a', borderDownColor: '#ff4f6a',
-      wickUpColor: '#26c97a', wickDownColor: '#ff4f6a',
-    });
-    series.setData(sorted.map(c => ({
-      time: toTime(c.timestamp),
-      open: +c.openPrice, high: +c.highPrice,
-      low: +c.lowPrice,  close: +c.closePrice,
-    })));
-  } else {
-    const series = _instance.addAreaSeries({
-      lineColor: '#4f8eff',
-      topColor: 'rgba(79,142,255,.2)',
-      bottomColor: 'rgba(79,142,255,0)',
-      lineWidth: 2,
-    });
-    series.setData(sorted.map(c => ({
-      time: toTime(c.timestamp),
-      value: +c.closePrice,
-    })));
-  }
-
-  _instance.timeScale().fitContent();
-  new ResizeObserver(() => {
-    if (_instance) _instance.applyOptions({ width: el.offsetWidth });
-  }).observe(el);
+  div.querySelector('#cancelBtn').addEventListener('click', () => {
+    div.querySelectorAll('.cbtn').forEach(b => b.disabled = true);
+    onCancel();
+  });
 }
