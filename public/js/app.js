@@ -141,6 +141,7 @@ function bindEvents() {
 async function init() {
   initTabs();
   bindEvents();
+  await loadStocks();
   initAutocompletes();
 
   // 웰컴 메시지
