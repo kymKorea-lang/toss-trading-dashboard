@@ -36,7 +36,7 @@ function bindEvents() {
   const chatInp=document.getElementById('chatInp');
   const send=()=>{const txt=chatInp.value.trim();if(txt){chatInp.value='';handleChat(txt);}};
   document.getElementById('sendBtn').addEventListener('click',send);
-  chatInp.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+  chatInp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); send(); } });
   document.getElementById('connectBtn').addEventListener('click',async()=>{
     const cid=document.getElementById('m-cid').value.trim(), csec=document.getElementById('m-csec').value.trim();
     if(!cid||!csec){setHTML('conn-result','키를 모두 입력하세요');return;}
