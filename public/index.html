@@ -5,19 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>토스증권 트레이딩 대시보드</title>
 <link rel="stylesheet" href="/css/style.css">
-<script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
+
+<!-- Header -->
 <header class="hdr">
   <div class="logo">📈</div>
-  <div><h1>토스증권 트레이딩</h1><p>Open API v1.1.5</p></div>
+  <div>
+    <h1>토스증권 트레이딩</h1>
+    <p>Open API v1.1.5</p>
+  </div>
   <div class="dot" id="dot"></div>
   <div class="hdr-right">
     <span class="token-info" id="tokenInfo"></span>
-    <button class="btn-icon" id="logoutBtn" style="display:none">로그아웃</button>
-    <button class="btn-icon" id="apiSetBtn">🔑 API 설정</button>
+    <button class="btn-icon" id="logoutBtn" style="display:none" onclick="app.logout()">로그아웃</button>
+    <button class="btn-icon" id="apiSetBtn" onclick="app.showApiModal()">🔑 API 설정</button>
   </div>
 </header>
+
+<!-- Nav -->
 <nav class="nav">
   <button class="ntab active" data-tab="trading">💬 트레이딩</button>
   <button class="ntab" data-tab="market">📊 시세</button>
@@ -27,8 +34,12 @@
   <button class="ntab" data-tab="orders">📋 주문내역</button>
   <button class="ntab" data-tab="orderinfo">ℹ️ 주문정보</button>
 </nav>
+
+<!-- Body -->
 <main class="body">
 <div class="panel" id="panelBody">
+
+<!-- TRADING -->
 <section id="tab-trading">
   <div class="chat-wrap">
     <div class="chat-msgs" id="chatMsgs"></div>
@@ -41,53 +52,99 @@
     </div>
   </div>
 </section>
+
+<!-- MARKET -->
 <section id="tab-market" style="display:none">
   <div class="card">
     <div class="card-title">차트 조회</div>
     <div class="row mb8">
-      <div class="field"><label>종목명</label><input id="m-name" placeholder="삼성전자, 애플..." autocomplete="off"><div class="autocomplete" id="m-ac" style="display:none"></div></div>
-      <div class="field"><label>봉 단위</label><select id="m-interval"><option value="1d">일봉</option><option value="1m">분봉</option></select></div>
-      <div class="field"><label>개수</label><input id="m-count" type="number" value="100" min="1" max="200"></div>
+      <div class="field">
+        <label>종목명</label>
+        <input id="m-name" placeholder="삼성전자, SK하이닉스, 애플..." autocomplete="off">
+        <div class="autocomplete" id="m-ac" style="display:none"></div>
+      </div>
+      <div class="field">
+        <label>봉 단위</label>
+        <select id="m-interval"><option value="1d">일봉</option><option value="1m">분봉</option></select>
+      </div>
+      <div class="field">
+        <label>개수</label>
+        <input id="m-count" type="number" value="100" min="1" max="200">
+      </div>
       <button class="btn pri" id="loadChartBtn">차트 로드</button>
     </div>
     <div class="chart-tabs">
       <button class="ctab active" data-mode="candle">캔들</button>
       <button class="ctab" data-mode="line">라인</button>
     </div>
+    <div id="chartStats" class="chart-stats"></div>
     <div class="chart-box"><div id="mainChart"></div></div>
   </div>
   <div class="grid2">
     <div class="card">
       <div class="card-title">상/하한가</div>
-      <div class="row"><div class="field"><label>종목명</label><input id="pl-name" placeholder="삼성전자" autocomplete="off"><div class="autocomplete" id="pl-ac" style="display:none"></div></div><button class="btn sec" id="loadPriceLimitBtn">조회</button></div>
+      <div class="row">
+        <div class="field">
+          <label>종목명</label>
+          <input id="pl-name" placeholder="삼성전자" autocomplete="off">
+          <div class="autocomplete" id="pl-ac" style="display:none"></div>
+        </div>
+        <button class="btn sec" id="loadPriceLimitBtn">조회</button>
+      </div>
       <div id="pl-result" class="result-box"></div>
     </div>
     <div class="card">
       <div class="card-title">현재가 다건 조회</div>
-      <div class="row"><div class="field"><label>종목명 (콤마 구분)</label><input id="mp-names" placeholder="삼성전자, 애플"></div><button class="btn sec" id="loadPricesBtn">조회</button></div>
+      <div class="row">
+        <div class="field">
+          <label>종목명 (콤마 구분)</label>
+          <input id="mp-names" placeholder="삼성전자, 애플">
+        </div>
+        <button class="btn sec" id="loadPricesBtn">조회</button>
+      </div>
       <div id="mp-result" class="result-box"></div>
     </div>
   </div>
 </section>
+
+<!-- STOCK INFO -->
 <section id="tab-stock" style="display:none">
   <div class="grid2">
     <div class="card">
       <div class="card-title">종목 기본정보</div>
-      <div class="row"><div class="field"><label>종목명 (콤마 구분)</label><input id="si-names" placeholder="삼성전자, 애플"></div><button class="btn pri" id="loadStockInfoBtn">조회</button></div>
+      <div class="row">
+        <div class="field">
+          <label>종목명 (콤마 구분)</label>
+          <input id="si-names" placeholder="삼성전자, 애플">
+        </div>
+        <button class="btn pri" id="loadStockInfoBtn">조회</button>
+      </div>
       <div id="si-result" style="margin-top:10px"></div>
     </div>
     <div class="card">
       <div class="card-title">매수 유의사항</div>
-      <div class="row"><div class="field"><label>종목명</label><input id="sw-name" placeholder="삼성전자" autocomplete="off"><div class="autocomplete" id="sw-ac" style="display:none"></div></div><button class="btn pri" id="loadWarningsBtn">조회</button></div>
+      <div class="row">
+        <div class="field">
+          <label>종목명</label>
+          <input id="sw-name" placeholder="삼성전자" autocomplete="off">
+          <div class="autocomplete" id="sw-ac" style="display:none"></div>
+        </div>
+        <button class="btn pri" id="loadWarningsBtn">조회</button>
+      </div>
       <div id="sw-result" style="margin-top:10px"></div>
     </div>
   </div>
 </section>
+
+<!-- MARKET INFO -->
 <section id="tab-marketinfo" style="display:none">
   <div class="grid3">
     <div class="card">
       <div class="card-title">환율 (KRW↔USD)</div>
-      <div class="row mb8"><div class="field"><label>기준통화</label><select id="er-base"><option value="USD">USD</option><option value="KRW">KRW</option></select></div><div class="field"><label>표시통화</label><select id="er-quote"><option value="KRW">KRW</option><option value="USD">USD</option></select></div></div>
+      <div class="row mb8">
+        <div class="field"><label>기준통화</label><select id="er-base"><option value="USD">USD</option><option value="KRW">KRW</option></select></div>
+        <div class="field"><label>표시통화</label><select id="er-quote"><option value="KRW">KRW</option><option value="USD">USD</option></select></div>
+      </div>
       <button class="btn pri w100 mb8" id="loadExRateBtn">조회</button>
       <div id="er-result" class="result-box"></div>
     </div>
@@ -105,14 +162,24 @@
     </div>
   </div>
 </section>
+
+<!-- ASSET -->
 <section id="tab-asset" style="display:none">
   <div class="card">
-    <div class="card-title flex-sb">보유 주식<button class="btn sec sm" id="refreshHoldingsBtn">새로고침</button></div>
-    <div class="row mb10"><div class="field"><label>종목 필터</label><input id="h-sym" placeholder="비워두면 전체"></div><button class="btn sec" id="filterHoldingsBtn">적용</button></div>
+    <div class="card-title flex-sb">
+      보유 주식
+      <button class="btn sec sm" id="refreshHoldingsBtn">새로고침</button>
+    </div>
+    <div class="row mb10">
+      <div class="field"><label>종목 필터</label><input id="h-sym" placeholder="비워두면 전체"></div>
+      <button class="btn sec" id="filterHoldingsBtn">적용</button>
+    </div>
     <div id="h-summary" class="grid4 mb12"></div>
     <div id="h-items"></div>
   </div>
 </section>
+
+<!-- ORDERS -->
 <section id="tab-orders" style="display:none">
   <div class="card mb10">
     <div class="card-title">주문 내역</div>
@@ -127,10 +194,15 @@
   <div id="ord-result"></div>
   <div class="card mt10">
     <div class="card-title">주문 상세</div>
-    <div class="row"><div class="field"><label>주문 ID</label><input id="od-id" placeholder="orderId"></div><button class="btn sec" id="loadOrderDetailBtn">조회</button></div>
+    <div class="row">
+      <div class="field"><label>주문 ID</label><input id="od-id" placeholder="orderId"></div>
+      <button class="btn sec" id="loadOrderDetailBtn">조회</button>
+    </div>
     <div id="od-result" class="result-box"></div>
   </div>
 </section>
+
+<!-- ORDER INFO -->
 <section id="tab-orderinfo" style="display:none">
   <div class="grid3">
     <div class="card">
@@ -152,8 +224,11 @@
     </div>
   </div>
 </section>
+
 </div>
 </main>
+
+<!-- API Modal -->
 <div class="overlay" id="apiModal" style="display:none">
   <div class="modal">
     <button class="mclose" id="closeApiModal">×</button>
@@ -166,6 +241,21 @@
     <div id="conn-result" class="result-box mt8"></div>
   </div>
 </div>
+
+<!-- Order Confirm Modal -->
+<div class="overlay" id="orderModal" style="display:none">
+  <div class="modal">
+    <button class="mclose" id="closeOrderModal">×</button>
+    <h3 id="om-title">주문 확인</h3>
+    <div id="om-rows"></div>
+    <div class="modal-btns">
+      <button class="btn grn flex1 lg" id="confirmOrderBtn">✅ 확정</button>
+      <button class="btn dan flex1 lg" id="cancelOrderBtn">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts (type="module") -->
 <script type="module" src="/js/app.js"></script>
 </body>
 </html>
