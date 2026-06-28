@@ -81,9 +81,8 @@ async function executeOrder(order) {
     const body = {
       symbol: order.sym,
       side: order.type === 'buy' ? 'BUY' : 'SELL',
-      orderType: 'LIMIT',
+      orderType: 'MARKET',
       quantity: String(order.qty),
-      price: String(order.price),
       confirmHighValueOrder: false,
     };
     const res = await createOrder(body);
