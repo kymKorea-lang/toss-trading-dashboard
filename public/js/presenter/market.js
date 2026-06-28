@@ -13,9 +13,15 @@ export async function loadChart() {
   const name=getVal('m-name'),interval=getVal('m-interval'),count=getVal('m-count')||100;
   if(!name){alert('종목명 입력');return;}
   const stock=findStock(name); if(!stock){alert('종목을 찾을 수 없습니다');return;}
-  try { const d=await getCandles(stock.sym,interval,count); setCandles(d.result?.candles||[]); render('mainChart'); }
+  try {
+    const d=await getCandles(stock.sym,interval,count);
+    console.log('캔들 응답:', JSON.stringify(d));  // ← 이 줄 추가
+    setCandles(d.result?.candles||[]);
+    render('mainChart');
+  }
   catch(e){alert(e.message);}
 }
+
 export function switchChartMode(mode){setMode(mode);render('mainChart');}
 export async function loadPriceLimit() {
   const name=getVal('pl-name'); if(!name) return;
