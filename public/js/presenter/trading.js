@@ -26,8 +26,9 @@ function parseIntent(text) {
   if (buyMatch) return { type: 'buy', stock: buyMatch[1].trim(), qty: parseFloat(buyMatch[2]) || 1 };
 
   // 매도
-  const sellMatch = t.match(/(.+?)\s+(\d+(?:\.\d+)?)\s*주\s*(매도|팔아|팔|sell)/i)
-                 || t.match(/(.+?)\s+(매도|팔아|팔|sell)/i);
+  const sellMatch = t.match(/(.+?)\s+(\d+(?:\.\d+)?)\s*주?\s*(매도|팔아|팔|sell)/i)
+               || t.match(/(.+?)\s*(매도|팔아|팔|sell)/i);
+  
   if (sellMatch) return { type: 'sell', stock: sellMatch[1].trim(), qty: parseFloat(sellMatch[2]) || 1 };
 
   return { type: 'unknown' };
