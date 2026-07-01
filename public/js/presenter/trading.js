@@ -21,12 +21,12 @@ function parseIntent(text) {
   if (priceMatch) return { type: 'price', stock: priceMatch[1].trim() };
 
   // 매수
-  const buyMatch = t.match(/(.+?)\s+(\d+(?:\.\d+)?)\s*주\s*(매수|사줘|사|buy)?/i)
+  const buyMatch = t.match(/(.+?)\s+(\d+(?:\.\d+)?)\s*주\s*(매수|사줘|사|buy)/i)
                 || t.match(/(.+?)\s+(매수|사줘|사|buy)/i);
   if (buyMatch) return { type: 'buy', stock: buyMatch[1].trim(), qty: parseFloat(buyMatch[2]) || 1 };
 
   // 매도
-const sellMatch = t.match(/(.+?)\s+(\d+(?:\.\d+)?)\s*주?\s*(매도|팔아|팔|sell)/i)
+  const sellMatch = t.match(/(.+?)\s+(\d+(?:\.\d+)?)\s*주\s*(매도|팔아|팔|sell)/i)
                || t.match(/(.+?)\s*(매도|팔아|팔|sell)/i);
   
   if (sellMatch) return { type: 'sell', stock: sellMatch[1].trim(), qty: parseFloat(sellMatch[2]) || 1 };
